@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  articles-data-base:
+    image: postgres:16
+    environment:
+      - POSTGRES_DATABASE_NAME=test_task_articles
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - 5433:5432
+    networks:
+      - article-network
+    volumes:
+      - article-data:/var/lib/postgresql/data
+
+  article-backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    container_name: article-test-api
+    ports:
+      - 5001:5001
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+      - REDIS_HOST=article-redis
+      - REDIS_PORT=6379
+    restart: always
+    volumes:
+      - ./src:/usr/src/app/src/
+    networks:
+      - article-network
+    depends_on:
+      - articles-data-base
+
+  article-redis:
+    image: redis:latest
+    container_name: article-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - article-network
+    volumes:
+      - redis-data:/data
+    restart: always
+
+networks:
+  article-network:
+    driver: bridge
+
+volumes:
+  article-data:
+  redis-data:
