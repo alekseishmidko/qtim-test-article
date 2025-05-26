@@ -8,7 +8,7 @@ import {
   JwtTokenService,
 } from '../../utils/jwt/jwt-token.service';
 
-export const unauthorizedExceptionDesc = 'Username or password is not valid';
+export const unauthorizedRes = 'Username or password is not valid';
 
 export class LoginUserCommand {
   constructor(public data: LoginUserDto) {}
@@ -37,7 +37,7 @@ export class LoginUserUsecase
       await this.userQueryRepository.getUserByUsername(data.username);
 
     if (!foundUserByUsername) {
-      throw new UnauthorizedException(unauthorizedExceptionDesc);
+      throw new UnauthorizedException(unauthorizedRes);
     }
 
     let passwordIsCorrect: boolean;
@@ -53,7 +53,7 @@ export class LoginUserUsecase
     }
 
     if (!passwordIsCorrect) {
-      throw new UnauthorizedException(unauthorizedExceptionDesc);
+      throw new UnauthorizedException(unauthorizedRes);
     }
 
     return foundUserByUsername;
